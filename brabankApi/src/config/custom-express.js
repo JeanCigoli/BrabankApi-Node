@@ -8,11 +8,12 @@ const CustomExpress = () => {
 
     app.use(express.json());
 
-    // Incluindo todas as controller dentro de app
     consign()
-    .include('./src/controller')
-    .include('./src/model')
-    .into(app);
+    .include('./src/controller/public')
+    .then('./src/middlewares')
+    .then('./src/controller')
+    .then('./src/model')
+    .into(app)
 
     return app;
 }
