@@ -1,5 +1,5 @@
 const { check, body } = require('express-validator');
-const UsuarioDao = require('../model/Usuarios');
+const UsuarioDao = new (require('../app/model/Usuarios'));
 
 class ValidUsers {
 
@@ -29,6 +29,8 @@ class ValidUsers {
 
                 return UsuarioDao.listByEmail(email)
                 .then(user => {
+
+                    user = user[0];
 
                     if(user){
                         return Promise.reject('E-mail já se encontra cadastrado');  
