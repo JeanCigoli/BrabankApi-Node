@@ -1,3 +1,7 @@
-# Aulas de Node.js desenvolvida no Senai Jandira
+# Aulas de Node.js e React Native desenvolvida no Senai Jandira
 
-28/01 - Aula 01
+Foi criado uma api em node.js para exemplo, utlizando JWT.
+
+---
+
+Foi construido um mini aplicativo em react native para consumir a api.

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, AsyncStorage} from 'react-native';
 
-export default class Login extends Component {
+export default class CadastrarUser extends Component {
 
     constructor() {
         super();
@@ -11,27 +11,53 @@ export default class Login extends Component {
             senha: '',
         }
     }
-
-    entrar = e => {
+    
+    cadastrar = async e => {
 
         if(!this.validar()){
             return;
         };
 
+        const params = {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                ...this.state,
+                nome: 'James Cigoli',
+                sexo: 'M',
+                cpf: '45025752184',
+            })
+        }
 
-        Alert.alert(this.state.email);
+        try {
+            
+            const retorno = await fetch('http://10.107.144.5:3333/registrar', params);
+
+            if(!retorno.ok){
+                return Alert.alert("Erro ao cadastrar");
+            }
+
+            Alert.alert("Cadastrado com sucesso");
+
+            const { payload } = await retorno.json()
+
+            AsyncStorage.setItem("Token", payload.token);
+            AsyncStorage.setItem("Token", payload.usuario);
+
+            const { navigation } = this.props;
+
+            navigation.navigate("Home", { ...payload.usuario } );
+
+        } catch (error) {
+            console.log(error)
+        }
+
     }
 
-    cadastrar = e => {
-
-        const { navigation } = this.props;
-
-        navigation.navigate("Cadastro");
-
-    }
 
     validar = () => {
-
         const { email, senha } = this.state;
 
         if(!email || !senha ){
@@ -40,11 +66,8 @@ export default class Login extends Component {
             return false;
 
         } else {
-
             return true;
-
         }
-
     }
 
     render() {
@@ -52,30 +75,19 @@ export default class Login extends Component {
             <View style={style.container}>
                 <View style={style.form}>
                     <Text style={style.title}>
-                        Tela de login
+                        Salvar novo usuário
                     </Text>
                     <TextInput
                         style={style.input}
                         placeholder='Seu e-mail'
-                        onChangeText={texto => this.setState({ email: texto })} 
-                        />
+                        onChangeText={texto => this.setState({ email: texto })}
+                    />
 
                     <TextInput
                         style={style.input}
-                        placeholder='Sua senha' 
+                        placeholder='Sua senha'
                         onChangeText={texto => this.setState({ senha: texto })}
-                        />
-
-                    <TouchableOpacity
-                        onPress={this.entrar}
-                        style={style.button}>
-
-                        <Text
-                            style={style.buttonTitle}>
-                                Entrar
-                        </Text>
-
-                    </TouchableOpacity>
+                    />
 
                     <TouchableOpacity
                         onPress={this.cadastrar}
@@ -83,14 +95,18 @@ export default class Login extends Component {
 
                         <Text
                             style={style.buttonTitle}>
-                                Cadastrar
+                            Salvar
                         </Text>
+
                     </TouchableOpacity>
+
                 </View>
             </View>
         );
+
     }
 }
+
 
 const style = StyleSheet.create({
     container: {
