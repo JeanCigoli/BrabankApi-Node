@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { isSignerIn, signIn } from '../services/authService'
 
 export default class Login extends Component {
 
@@ -12,14 +13,35 @@ export default class Login extends Component {
         }
     }
 
-    entrar = e => {
+    componentDidMount = async () => {
+
+        const session = await isSignerIn();
+        
+        if(session?.usuario){
+            const { navigation } = this.props;
+            navigation.replace("Home");
+        }
+
+    }
+
+    entrar = async e => {
 
         if(!this.validar()){
             return;
         };
 
+        const usuario = this.state;
 
-        Alert.alert(this.state.email);
+        const response = await signIn(usuario);
+
+        if(response.ok){
+
+            const { navigation } = this.props;
+
+            navigation.replace("Home");
+
+        }
+
     }
 
     cadastrar = e => {

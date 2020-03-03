@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, AsyncStorage} from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, AsyncStorage } from 'react-native';
+import { cadastrar as cadastrarUsuario } from '../services/authService';
 
 export default class CadastrarUser extends Component {
 
@@ -11,44 +12,34 @@ export default class CadastrarUser extends Component {
             senha: '',
         }
     }
-    
+
     cadastrar = async e => {
 
-        if(!this.validar()){
+        if (!this.validar()) {
             return;
         };
 
-        const params = {
-            method: 'POST',
-            headers: {
-                'Content-type': 'application/json'
-            },
-            body: JSON.stringify({
-                ...this.state,
-                nome: 'James Cigoli',
-                sexo: 'M',
-                cpf: '45025752184',
-            })
-        }
+        const usuario = this.state;
+
+        const body = {
+            ...usuario,
+            nome: 'James Cigoli',
+            sexo: 'M',
+            cpf: '45025752184',
+        };
+
 
         try {
-            
-            const retorno = await fetch('http://10.107.144.5:3333/registrar', params);
 
-            if(!retorno.ok){
+            const result = await cadastrarUsuario(body);
+
+            if (!result.ok) {
                 return Alert.alert("Erro ao cadastrar");
             }
 
-            Alert.alert("Cadastrado com sucesso");
-
-            const { payload } = await retorno.json()
-
-            AsyncStorage.setItem("Token", payload.token);
-            AsyncStorage.setItem("Token", payload.usuario);
-
             const { navigation } = this.props;
 
-            navigation.navigate("Home", { ...payload.usuario } );
+            navigation.navigate("Home");
 
         } catch (error) {
             console.log(error)
@@ -60,7 +51,7 @@ export default class CadastrarUser extends Component {
     validar = () => {
         const { email, senha } = this.state;
 
-        if(!email || !senha ){
+        if (!email || !senha) {
 
             Alert.alert("Erro", "Todos os campos são obrigatórios");
             return false;
